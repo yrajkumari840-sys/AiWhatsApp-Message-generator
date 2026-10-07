@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI WhatsApp Message Generator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, "Noto Sans Devanagari", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8fff1, #f4f8ff);
+      color: #17251d;
+    }
+
+    header {
+      background: #075e54;
+      color: white;
+      padding: 18px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 25px;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 14px;
+      opacity: .9;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 15px 0 8px;
+    }
+
+    select, textarea, input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d7ddd9;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    select:focus,
+    textarea:focus,
+    input:focus {
+      border-color: #25d366;
+    }
+
+    .generate {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #25d366;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .generate:hover {
+      background: #1ebe5d;
+    }
+
+    .result {
+      display: none;
+      margin-top: 25px;
+      padding: 20px;
+      background: #f0fff5;
+      border: 1px solid #bce8cb;
+      border-radius: 15px;
+    }
+
+    .result h2 {
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    #message {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .buttons button {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .copy {
+      background: #555;
+      color: white;
+    }
+
+    .whatsapp {
+      background: #25d366;
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #667;
+      font-size: 13px;
+    }
+
+    @media(max-width:600px) {
+      .card {
+        padding: 18px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🤖 AI WhatsApp Message Generator</h1>
+  <p>हिंदी में शानदार WhatsApp संदेश बनाएं</p>
+</header>
+
+<div class="container">
+  <div class="card">
+
+    <label>संदेश का प्रकार चुनें</label>
+    <select id="type">
+      <option value="birthday">🎂 जन्मदिन शुभकामना</option>
+      <option value="business">🏪 बिजनेस संदेश</option>
+      <option value="festival">🎉 त्योहार की शुभकामना</option>
+      <option value="invitation">💌 निमंत्रण संदेश</option>
+      <option value="thankyou">🙏 धन्यवाद संदेश</option>
+      <option value="personal">💬 व्यक्तिगत संदेश</option>
+    </select>
+
+    <label>किसके लिए संदेश है?</label>
+    <input id="name" type="text" placeholder="जैसे: राहुल जी">
+
+    <label>मुख्य जानकारी</label>
+    <textarea id="details"
+      placeholder="जैसे: जन्मदिन की शुभकामना देनी है..."></textarea>
+
+    <label>संदेश का अंदाज़</label>
+    <select id="style">
+      <option value="friendly">😊 दोस्ताना</option>
+      <option value="formal">💼 प्रोफेशनल</option>
+      <option value="emotional">❤️ भावनात्मक</option>
+      <option value="short">⚡ छोटा और आकर्षक</option>
+    </select>
+
+    <button class="generate" onclick="generateMessage()">
+      ✨ AI संदेश बनाएं
+    </button>
+
+    <div class="result" id="result">
+      <h2>आपका तैयार संदेश</h2>
+
+      <div id="message"></div>
+
+      <div class="buttons">
+        <button class="copy" onclick="copyMessage()">
+          📋 कॉपी करें
+        </button>
+
+        <button class="whatsapp" onclick="sendWhatsApp()">
+          💚 WhatsApp पर भेजें
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  © 2026 AI WhatsApp Message Generator
+</footer>
+
+<script>
+
+function generateMessage() {
+
+  const type = document.getElementById("type").value;
+  const name = document.getElementById("name").value || "आप";
+  const details = document.getElementById("details").value;
+  const style = document.getElementById("style").value;
+
+  let message = "";
+
+  if (type === "birthday") {
+    message =
+`🎂 जन्मदिन की हार्दिक शुभकामनाएं ${name}! 🎉
+
+ईश्वर से मेरी यही प्रार्थना है कि आपका जीवन खुशियों, सफलता और अच्छे स्वास्थ्य से भरा रहे। 🌸
+
+आपका आने वाला हर दिन नई खुशियां लेकर आए। ❤️
+
+${details}`;
+
+  } else if (type === "business") {
+    message =
+`🏪 नमस्कार ${name} जी!
+
+हम आपके लिए बेहतरीन सेवा और शानदार ऑफर लेकर आए हैं। ✨
+
+आपका विश्वास और सहयोग हमारे लिए बहुत महत्वपूर्ण है।
+
+${details}
+
+धन्यवाद 🙏`;
+
+  } else if (type === "festival") {
+    message =
+`🎉 ${name} जी को हार्दिक शुभकामनाएं! 🌸
+
+यह शुभ अवसर आपके जीवन में सुख, शांति, समृद्धि और खुशियां लेकर आए।
+
+आप और आपके पूरे परिवार को ढेरों शुभकामनाएं। ❤️
+
+${details}`;
+
+  } else if (type === "invitation") {
+    message =
+`💌 सादर आमंत्रण
+
+प्रिय ${name} जी,
+
+आपको हमारे विशेष कार्यक्रम में सादर आमंत्रित करते हुए हमें बहुत खुशी हो रही है।
+
+${details}
+
+आपकी उपस्थिति हमारे लिए बहुत खास होगी। 🙏`;
+
+  } else if (type === "thankyou") {
+    message =
+`🙏 बहुत-बहुत धन्यवाद ${name} जी!
+
+आपके सहयोग, प्यार और विश्वास के लिए दिल से आभार। ❤️
+
+आपका साथ हमारे लिए हमेशा महत्वपूर्ण रहेगा।
+
+${details}`;
+
+  } else {
+    message =
+`💬 प्रिय ${name} जी,
+
+आपसे कुछ खास कहना था। 😊
+
+${details}
+
+आपका दिन शुभ और खुशियों से भरा रहे। 🌸`;
+  }
+
+  if (style === "short") {
+    message = message.substring(0, 300) + " ✨";
+  }
+
+  if (style === "formal") {
+    message = "नमस्कार,\n\n" + message + "\n\nसादर धन्यवाद।";
+  }
+
+  if (style === "emotional") {
+    message += "\n\n❤️ आपका साथ हमेशा याद रहेगा।";
+  }
+
+  document.getElementById("message").innerText = message;
+  document.getElementById("result").style.display = "block";
+}
+
+
+function copyMessage() {
+
+  const message = document.getElementById("message").innerText;
+
+  navigator.clipboard.writeText(message);
+
+  alert("✅ संदेश कॉपी हो गया!");
+}
+
+
+function sendWhatsApp() {
+
+  const message = document.getElementById("message").innerText;
+
+  const url =
+    "https://wa.me/?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank");
+}
+
+</script>
+
+</body>
+</html>
